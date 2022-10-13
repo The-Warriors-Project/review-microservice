@@ -3,7 +3,7 @@ import pymysql
 import os
 
 
-class ColumbiaStudentResource:
+class ReviewResource:
 
     def __int__(self):
         pass
@@ -14,9 +14,9 @@ class ColumbiaStudentResource:
         # usr = os.environ.get("DBUSER")
         # pw = os.environ.get("DBPW")
         # h = os.environ.get("DBHOST")
-        usr = "wsl_root"
+        usr = "admin"
         pw = "dbuserdbuser"
-        h = "172.21.80.1"
+        h = "e61561.cn3tryzjsdgx.us-east-1.rds.amazonaws.com"
 
         conn = pymysql.connect(
             user=usr,
@@ -31,7 +31,7 @@ class ColumbiaStudentResource:
     def get_by_key(key):
 
         sql = "SELECT * FROM f22_databases.columbia_students where guid=%s";
-        conn = ColumbiaStudentResource._get_connection()
+        conn = ReviewResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=key)
         result = cur.fetchone()
