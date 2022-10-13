@@ -4,7 +4,6 @@
 
 This is a simple Flask based starter microservice for F22 Columbia classes.
 
-
 ## Setup
 
 - For the purposes of E6156 and W4111, please install PyCharm Professional.
@@ -33,5 +32,4 @@ Select the file ```tts.py``` and run it. The message will determine if your end-
 ## Connecting to the Database
 
 The file ```columbia_student_resource.py``` is a simple, starter REST resource.
-
 
