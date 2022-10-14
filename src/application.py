@@ -17,7 +17,7 @@ CORS(app)
 def get_health():
     t = str(datetime.now())
     msg = {
-        "name": "F22-Starter-Microservice",
+        "name": "Review-Microservice",
         "health": "Good",
         "at time": t
     }
@@ -28,17 +28,60 @@ def get_health():
     return result
 
 
-@app.route("/api/students/<uni>", methods=["GET"])
-def get_student_by_uni(uni):
+#ENDPOINT FOR TESTING ONLY
+@app.route("/api/reviews/<book_id>", methods=["GET"])
+def get_book_by_id(book_id):
 
-    result = ReviewResource.get_by_key(uni)
+    result = ReviewResource.get_by_book_id(book_id)
 
     if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+        rsp = Response(json.dumps(result, sort_keys=True, default=str), status=200, content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
 
     return rsp
+
+@app.route("/api/reviews", methods=["GET", "POST"])
+def get_reviews_by_book_id():
+    
+    if request.method == "POST":
+        t = str(datetime.now())
+        msg = {
+            "name": "Review-Microservice",
+            "health": "Good",
+            "at time": t
+        }
+        data = request.get_json()
+        result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
+        #result = Response(json.dumps(msg), status=200, content_type="application/json")
+        return result 
+    else:
+        book_id = request.args.get("book_id")
+        if not book_id:
+            result = ReviewResource.get_all_reviews()
+        else:
+            result = ReviewResource.get_by_book_id(book_id)
+
+        if result:
+            rsp = Response(json.dumps(result, sort_keys=True, default=str), status=200, content_type="application.json")
+        else:
+            rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+
+        return rsp
+
+
+@app.route("/api/reviews", methods=["POST"])
+def add_review():
+    t = str(datetime.now())
+    msg = {
+        "name": "Review-Microservice",
+        "health": "Good",
+        "at time": t
+    }
+    data = request.form
+    result = ReviewResource.create_review(data[book_id], data[review_text], data[user_id])
+    #result = Response(json.dumps(msg), status=200, content_type="application/json")
+    return result 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)
