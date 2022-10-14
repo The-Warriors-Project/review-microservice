@@ -28,16 +28,6 @@ class ReviewResource:
         )
         return conn
 
-    @staticmethod
-    def get_by_key(key):
-
-        sql = "SELECT * FROM bases.columbia_students where guid=%s";
-        conn = ReviewResource._get_connection()
-        cur = conn.cursor()
-        res = cur.execute(sql, args=key)
-        result = cur.fetchone()
-
-        return result
 
     @staticmethod
     def get_by_book_id(book_id):
@@ -45,7 +35,7 @@ class ReviewResource:
         conn = ReviewResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=book_id)
-        result = cur.fetchone()
+        result = cur.fetchall()
 
         return result
 
@@ -55,7 +45,7 @@ class ReviewResource:
         conn = ReviewResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=user_id)
-        result = cur.fetchone()
+        result = cur.fetchall()
 
         return result
 
