@@ -49,6 +49,16 @@ class ReviewResource:
 
         return result
 
+    @staticmethod
+    def get_by_user_id(user_id):
+        sql = "SELECT * FROM Reviews.reviews_table where user_id=%s";
+        conn = ReviewResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql, args=user_id)
+        result = cur.fetchone()
+
+        return result
+
 
     @staticmethod
     def get_all_reviews():
