@@ -27,6 +27,13 @@ def get_health():
 
     return result
 
+def return_result(result):
+    if result:
+        rsp = Response(json.dumps(result, sort_keys=True, default=str), status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+    return rsp
+
 
 #ENDPOINT FOR TESTING ONLY
 @app.route("/api/reviews/<book_id>", methods=["GET"])
@@ -43,7 +50,6 @@ def get_book_by_id(book_id):
 
 @app.route("/api/reviews", methods=["GET", "POST"])
 def get_reviews_by_book_id():
-    
     if request.method == "POST":
         t = str(datetime.now())
         msg = {
@@ -53,22 +59,16 @@ def get_reviews_by_book_id():
         }
         data = request.get_json()
         result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
-        #result = Response(json.dumps(msg), status=200, content_type="application/json")
-        return result 
-    else:
+    elif request.args.get("book_id"):
         book_id = request.args.get("book_id")
-        if not book_id:
-            result = ReviewResource.get_all_reviews()
-        else:
-            result = ReviewResource.get_by_book_id(book_id)
+        result = ReviewResource.get_by_book_id(book_id)
+    elif request.args.get("user_id"):
+        user_id = request.args.get("user_id")
+        result = ReviewResource.get_by_user_id(user_id)
+    else:
+        result = ReviewResource.get_all_reviews()
 
-        if result:
-            rsp = Response(json.dumps(result, sort_keys=True, default=str), status=200, content_type="application.json")
-        else:
-            rsp = Response("NOT FOUND", status=404, content_type="text/plain")
-
-        return rsp
-
+    return return_result(result)
 
 @app.route("/api/reviews", methods=["POST"])
 def add_review():
