@@ -59,6 +59,10 @@ def get_reviews_by_book_id():
         }
         data = request.get_json()
         result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
+    elif request.args.get("book_id") and request.args.get("user_id"):
+        book_id = request.args.get("book_id")
+        user_id = request.args.get("user_id")
+        result = ReviewResource.get_by_book_and_user_id(book_id,user_id)
     elif request.args.get("book_id"):
         book_id = request.args.get("book_id")
         result = ReviewResource.get_by_book_id(book_id)
