@@ -51,12 +51,6 @@ def get_book_by_id(book_id):
 @app.route("/api/reviews", methods=["GET", "POST"])
 def get_reviews_by_book_id():
     if request.method == "POST":
-        t = str(datetime.now())
-        msg = {
-            "name": "Review-Microservice",
-            "health": "Good",
-            "at time": t
-        }
         data = request.get_json()
         result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
     elif request.args.get("book_id") and request.args.get("user_id"):
@@ -74,18 +68,6 @@ def get_reviews_by_book_id():
 
     return return_result(result)
 
-@app.route("/api/reviews", methods=["POST"])
-def add_review():
-    t = str(datetime.now())
-    msg = {
-        "name": "Review-Microservice",
-        "health": "Good",
-        "at time": t
-    }
-    data = request.form
-    result = ReviewResource.create_review(data[book_id], data[review_text], data[user_id])
-    #result = Response(json.dumps(msg), status=200, content_type="application/json")
-    return result 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)

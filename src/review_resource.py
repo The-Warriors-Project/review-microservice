@@ -17,7 +17,7 @@ class ReviewResource:
         # h = os.environ.get("DBHOST")
         usr = "admin"
         pw = "the_warriors"
-        h = "reviews.ci6gsofoisc0.us-east-1.rds.amazonaws.com"
+        h =  "reviews.c4m5teyjg8v7.us-east-1.rds.amazonaws.com"
 
         conn = pymysql.connect(
             user=usr,
@@ -73,9 +73,10 @@ class ReviewResource:
     @staticmethod
     def create_review(book_id, review_text, user_id, score):
         t = datetime.now()
-        sql = "INSERT INTO Reviews.reviews_table (book_id, review_txt, user_id, score, date) VALUES (%s, %s, %s, %s, %s)"
+        sql = "INSERT INTO Reviews.reviews_table (book_id, review_text, user_id, score, date) VALUES (%s, %s, %s, %s, %s)"
         conn = ReviewResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql,[book_id,review_text,user_id,score, t])
+        print("What's happening y'all!")
         
         return "success" 
