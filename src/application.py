@@ -13,7 +13,7 @@ app = Flask(__name__,
 CORS(app)
 
 
-@app.get("/api/health")
+@app.get("/api/v1/reviews/health")
 def get_health():
     t = str(datetime.now())
     msg = {
@@ -48,7 +48,7 @@ def get_book_by_id(book_id):
 
     return rsp
 
-@app.route("/api/reviews", methods=["GET", "POST"])
+@app.route("/api/v1/reviews", methods=["GET", "POST"])
 def get_reviews_by_book_id():
     if request.method == "POST":
         data = request.get_json()
