@@ -27,7 +27,9 @@ def get_health():
 
     return result
 
-def return_result(result):
+def return_result(result, error=False):
+    if error:
+        rsp = Response(json.dumps(result, sort_keys=True, default=str), status=400, content_type="application.json")
     if result:
         rsp = Response(json.dumps(result, sort_keys=True, default=str), status=200, content_type="application.json")
     else:
@@ -50,9 +52,17 @@ def get_book_by_id(book_id):
 
 @app.route("/api/v1/reviews", methods=["GET", "POST"])
 def get_reviews_by_book_id():
+    error = False
     if request.method == "POST":
         data = request.get_json()
-        result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
+        try:
+            result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
+        except Exception as e:
+            result = {
+            "status": "Invalid Key Error",
+            "body":e 
+            }
+            error = True
     elif request.args.get("book_id") and request.args.get("user_id"):
         book_id = request.args.get("book_id")
         user_id = request.args.get("user_id")
@@ -66,9 +76,9 @@ def get_reviews_by_book_id():
     else:
         result = ReviewResource.get_all_reviews()
 
-    return return_result(result)
+
+    return return_result(result, error)
 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)
-
