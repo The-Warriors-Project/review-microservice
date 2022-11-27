@@ -1,84 +1,79 @@
-from flask import Flask, Response, request
-from datetime import datetime
 import json
-from review_resource import ReviewResource 
-from flask_cors import CORS
+from datetime import datetime
 
-# Create the Flask application object.
-app = Flask(__name__,
-            static_url_path='/',
-            static_folder='static/class-ui/',
-            template_folder='web/templates')
+from fastapi import FastAPI, Response, status, Request
+from fastapi.openapi.models import Response
 
-CORS(app)
+from review_resource import ReviewResource
+
+# from db_util import check_db_connection
+
+app = FastAPI()
 
 
-@app.get("/api/v1/reviews/health")
+@app.get("/api/health")
 def get_health():
     t = str(datetime.now())
+    # db_connection = check_db_connection()
     msg = {
         "name": "Review-Microservice",
         "health": "Good",
         "at time": t
     }
-
-    # DFF TODO Explain status codes, content type, ... ...
-    result = Response(json.dumps(msg), status=200, content_type="application/json")
-
+    result = Response(json.dumps(msg), status_code=status.HTTP_200_OK)
     return result
+
 
 def return_result(result, error=False):
     if error:
-        rsp = Response(json.dumps(result, sort_keys=True, default=str), status=400, content_type="application.json")
+        rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_400_BAD_REQUEST)
     if result:
-        rsp = Response(json.dumps(result, sort_keys=True, default=str), status=200, content_type="application.json")
+        rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_200_OK)
     else:
-        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+        rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
     return rsp
 
 
-#ENDPOINT FOR TESTING ONLY
-@app.route("/api/reviews/<book_id>", methods=["GET"])
-def get_book_by_id(book_id):
-
+# ENDPOINT FOR TESTING ONLY
+@app.get('/api/reviews/{book_id}')
+def get_book_by_id(book_id: int):
     result = ReviewResource.get_by_book_id(book_id)
 
     if result:
-        rsp = Response(json.dumps(result, sort_keys=True, default=str), status=200, content_type="application.json")
+        rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_200_OK)
     else:
-        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+        rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
 
     return rsp
 
-@app.route("/api/v1/reviews", methods=["GET", "POST"])
-def get_reviews_by_book_id():
+
+@app.get("/api/v1/reviews")
+def get_reviews_by_book_id(request: Request):
     error = False
-    if request.method == "POST":
-        data = request.get_json()
-        try:
-            result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
-        except Exception as e:
-            result = {
+    data = await request.json()
+    try:
+        result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
+    except Exception as e:
+        result = {
             "status": "Invalid Key Error",
-            "body":e 
-            }
-            error = True
-    elif request.args.get("book_id") and request.args.get("user_id"):
-        book_id = request.args.get("book_id")
-        user_id = request.args.get("user_id")
-        result = ReviewResource.get_by_book_and_user_id(book_id,user_id)
-    elif request.args.get("book_id"):
-        book_id = request.args.get("book_id")
+            "body": e
+        }
+        error = True
+    return return_result(result, error)
+
+
+@app.post("/api/v1/reviews")
+def get_reviews_by_book_id_post(request: Request):
+    error = False
+    book_id = request.query_params['book_id']
+    user_id = request.query_params['user_id']
+    if book_id and user_id:
+        result = ReviewResource.get_by_book_and_user_id(book_id, user_id)
+    elif book_id:
         result = ReviewResource.get_by_book_id(book_id)
-    elif request.args.get("user_id"):
-        user_id = request.args.get("user_id")
+    elif user_id:
         result = ReviewResource.get_by_user_id(user_id)
     else:
         result = ReviewResource.get_all_reviews()
 
-
     return return_result(result, error)
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5011)
