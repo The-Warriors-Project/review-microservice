@@ -50,7 +50,7 @@ def get_book_by_id(book_id: int):
 @app.get("/api/v1/reviews")
 def get_reviews_by_book_id(request: Request):
     error = False
-    data = await request.json()
+    data = request.json()
     try:
         result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
     except Exception as e:
