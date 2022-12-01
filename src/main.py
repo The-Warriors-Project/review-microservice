@@ -11,7 +11,7 @@ from review_resource import ReviewResource
 app = FastAPI()
 
 
-@app.get("/api/health")
+@app.get("/api/v1/reviews/health")
 def get_health():
     t = str(datetime.now())
     # db_connection = check_db_connection()
@@ -26,10 +26,20 @@ def get_health():
 
 def return_result(result, error=False):
     if error:
+        print("theres an error")
         rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_400_BAD_REQUEST)
     if result:
-        rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_200_OK)
+        print("theres result")
+        print(type(result))
+        print(type(json.dumps(result, sort_keys=True, default=str)))
+        print(type(json.loads(json.dumps(result, sort_keys=True, default=str))))
+        x = json.loads(json.dumps(result, sort_keys=True, default=str))
+        # rsp = Response()
+        # rsp.json(result)
+        print(x)
+        rsp = Response(content=x, status_code=status.HTTP_200_OK)
     else:
+        print("theres none")
         rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
     return rsp
 
@@ -47,26 +57,32 @@ def get_book_by_id(book_id: int):
     return rsp
 
 
-@app.get("/api/v1/reviews")
-def get_reviews_by_book_id(request: Request):
+@app.post("/api/v1/reviews")
+async def get_reviews_by_book_id(request: Request):
     error = False
-    data = request.json()
     try:
+        data1 = await request.body()
+        print(data1)
+        data = await request.json()
         result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
     except Exception as e:
         result = {
             "status": "Invalid Key Error",
             "body": e
         }
+        print("got an error")
         error = True
     return return_result(result, error)
 
 
-@app.post("/api/v1/reviews")
-def get_reviews_by_book_id_post(request: Request):
+@app.get("/api/v1/reviews")
+def get_reviews_by_book_id(request: Request):
     error = False
-    book_id = request.query_params['book_id']
-    user_id = request.query_params['user_id']
+    book_id, user_id = None, None
+    if 'book_id' in request.query_params:
+        book_id = request.query_params['book_id']
+    if 'user_id' in request.query_params:
+        user_id = request.query_params['user_id']
     if book_id and user_id:
         result = ReviewResource.get_by_book_and_user_id(book_id, user_id)
     elif book_id:
@@ -76,4 +92,5 @@ def get_reviews_by_book_id_post(request: Request):
     else:
         result = ReviewResource.get_all_reviews()
 
-    return return_result(result, error)
+    x = return_result(result, error)
+    return x
