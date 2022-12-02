@@ -7,8 +7,6 @@ from fastapi.responses import JSONResponse
 
 from review_resource import ReviewResource
 
-# from db_util import check_db_connection
-
 app = FastAPI()
 
 
@@ -25,45 +23,10 @@ def get_health():
     return result
 
 
-def return_result(result, error=False):
-    if error:
-        print("theres an error")
-        rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_400_BAD_REQUEST)
-    if result:
-        print("theres result")
-        print(type(result))
-        print(type(json.dumps(result, sort_keys=True, default=str)))
-        print(type(json.loads(json.dumps(result, sort_keys=True, default=str))))
-        x = json.loads(json.dumps(result, sort_keys=True, default=str))
-        # rsp = Response()
-        # rsp.json(result)
-        print(x)
-        rsp = Response(result, status_code=status.HTTP_200_OK)
-    else:
-        print("theres none")
-        rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
-    return rsp
-
-
-# ENDPOINT FOR TESTING ONLY
-# @app.get('/api/reviews/{book_id}')
-# def get_book_by_id(book_id: int):
-#     result = ReviewResource.get_by_book_id(book_id)
-#
-#     if result:
-#         rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_200_OK)
-#     else:
-#         rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
-#
-#     return rsp
-
-
 @app.post("/api/v1/reviews")
 async def get_reviews_by_book_id(request: Request):
     error = False
     try:
-        data1 = await request.body()
-        print(data1)
         data = await request.json()
         result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
     except Exception as e:
@@ -73,7 +36,13 @@ async def get_reviews_by_book_id(request: Request):
         }
         print("got an error")
         error = True
-    return return_result(result, error)
+
+    if error:
+        return JSONResponse(content=json.loads(json.dumps(result, sort_keys=True, default=str)),
+                            status_code=status.HTTP_400_BAD_REQUEST)
+    else:
+        return JSONResponse(content=json.loads(json.dumps(result, sort_keys=True, default=str)),
+                            status_code=status.HTTP_200_OK)
 
 
 @app.get("/api/v1/reviews")
