@@ -1,7 +1,6 @@
-import pymysql
 from datetime import datetime
 
-import os
+import pymysql
 
 
 class ReviewResource:
@@ -11,13 +10,12 @@ class ReviewResource:
 
     @staticmethod
     def _get_connection():
-
         # usr = os.environ.get("DBUSER")
         # pw = os.environ.get("DBPW")
         # h = os.environ.get("DBHOST")
         usr = "admin"
         pw = "the_warriors"
-        h =  "books.c4m5teyjg8v7.us-east-1.rds.amazonaws.com"
+        h = "books.c4m5teyjg8v7.us-east-1.rds.amazonaws.com"
 
         conn = pymysql.connect(
             user=usr,
@@ -27,7 +25,6 @@ class ReviewResource:
             autocommit=True
         )
         return conn
-
 
     @staticmethod
     def get_by_book_id(book_id):
@@ -76,9 +73,7 @@ class ReviewResource:
         cur = conn.cursor()
         res = cur.execute(sql)
         result = cur.fetchall()
-
         return result
-
 
     @staticmethod
     def create_review(book_id, review_text, user_id, score):
@@ -86,9 +81,8 @@ class ReviewResource:
         sql = "INSERT INTO reviews_db.reviews (book_id, review_text, user_id, score, date) VALUES (%s, %s, %s, %s, %s)"
         conn = ReviewResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql,[book_id,review_text,user_id,score, t])
+        res = cur.execute(sql, [book_id, review_text, user_id, score, t])
         result = ReviewResource.get_by_review_id(cur.lastrowid)[0]
         result["status"] = "SUCCESS"
 
-        
         return result

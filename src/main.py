@@ -3,6 +3,7 @@ from datetime import datetime
 
 from fastapi import FastAPI, Response, status, Request
 from fastapi.openapi.models import Response
+from fastapi.responses import JSONResponse
 
 from review_resource import ReviewResource
 
@@ -37,7 +38,7 @@ def return_result(result, error=False):
         # rsp = Response()
         # rsp.json(result)
         print(x)
-        rsp = Response(content=x, status_code=status.HTTP_200_OK)
+        rsp = Response(result, status_code=status.HTTP_200_OK)
     else:
         print("theres none")
         rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
@@ -92,5 +93,9 @@ def get_reviews_by_book_id(request: Request):
     else:
         result = ReviewResource.get_all_reviews()
 
-    x = return_result(result, error)
-    return x
+    if result:
+        return JSONResponse(content=json.loads(json.dumps(result, sort_keys=True, default=str)),
+                            status_code=status.HTTP_200_OK)
+    else:
+        return JSONResponse(content=json.loads(json.dumps(result, sort_keys=True, default=str)),
+                            status_code=status.HTTP_404_NOT_FOUND)
