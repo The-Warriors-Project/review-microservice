@@ -28,13 +28,17 @@ class ReviewResource:
 
     @staticmethod
     def get_by_book_id(book_id):
-        sql = "SELECT * FROM reviews_db.reviews where book_id=%s";
+        sql = "SELECT *  FROM reviews_db.reviews AS t JOIN (SELECT user_id as user_id, count(*) AS num_reviews FROM reviews_db.reviews GROUP BY user_id) AS review_count ON review_count.user_id = t.user_id WHERE book_id=%s" 
+        avg = "SELECT AVG(SCORE) as average_score FROM reviews_db.reviews where book_id=%s";
+        #sql = "SELECT *, AVG(Score) AS average_score FROM reviews_db.reviews where book_id=%s";
         conn = ReviewResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=book_id)
-        result = cur.fetchall()
+        sql_result = cur.fetchall()
+        res2 = cur.execute(avg, args=book_id)
+        avg_result = cur.fetchone()
 
-        return result
+        return sql_result, avg_result["average_score"] 
 
     @staticmethod
     def get_by_user_id(user_id):
