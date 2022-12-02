@@ -46,16 +46,16 @@ def return_result(result, error=False):
 
 
 # ENDPOINT FOR TESTING ONLY
-@app.get('/api/reviews/{book_id}')
-def get_book_by_id(book_id: int):
-    result = ReviewResource.get_by_book_id(book_id)
-
-    if result:
-        rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_200_OK)
-    else:
-        rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
-
-    return rsp
+# @app.get('/api/reviews/{book_id}')
+# def get_book_by_id(book_id: int):
+#     result = ReviewResource.get_by_book_id(book_id)
+#
+#     if result:
+#         rsp = Response(json.dumps(result, sort_keys=True, default=str), status_code=status.HTTP_200_OK)
+#     else:
+#         rsp = Response(content="NOT FOUND", status_code=status.HTTP_404_NOT_FOUND)
+#
+#     return rsp
 
 
 @app.post("/api/v1/reviews")
@@ -97,5 +97,5 @@ def get_reviews_by_book_id(request: Request):
         return JSONResponse(content=json.loads(json.dumps(result, sort_keys=True, default=str)),
                             status_code=status.HTTP_200_OK)
     else:
-        return JSONResponse(content=json.loads(json.dumps(result, sort_keys=True, default=str)),
+        return JSONResponse(content='NOT FOUND',
                             status_code=status.HTTP_404_NOT_FOUND)
