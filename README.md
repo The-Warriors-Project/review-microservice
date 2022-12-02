@@ -4,6 +4,12 @@
 
 This is the Reviews Microservice for the Book Project.
 
+To run (FASTAPI):
+```
+cd src/
+uvicorn main:app --reload
+```
+
 ##Endpoints 
 
 - POST requests to /api/v1/reviews must include JSON format with keys book_id, user_id, review_text, score
