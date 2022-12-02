@@ -14,7 +14,7 @@ This is the Reviews Microservice for the Book Project.
 3. Run the command to activate the program 
 ```
 cd src/
-uvicorn main:app --host 0.0.0.0 --port 5011
+uvicorn main:app --reload
 ```
 ## Endpoints 
 
