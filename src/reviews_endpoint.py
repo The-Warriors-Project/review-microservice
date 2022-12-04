@@ -12,14 +12,14 @@ from review_resource import ReviewResource
 reviews_router = APIRouter(prefix='/api/v1/reviews')
 
 
-@reviews_router.get(path='/user_id/{user_id}', status_code=status.HTTP_200_OK, operation_id='get_all_reviews_by_user_id')
-def get_reviews_by_user_id(user_id: int):
+@reviews_router.get(path='/username/{username}', status_code=status.HTTP_200_OK, operation_id='get_all_reviews_by_user_id')
+def get_reviews_by_user_id(username: str):
     """
 
-    :param user_id: user id
-    :return: return all reviews for a given user_id
+    :param username: username
+    :return: return all reviews for a given username
     """
-    result = ReviewResource.get_by_user_id(user_id)
+    result = ReviewResource.get_by_user_id(username)
     if result:
         return JSONResponse(content=json.loads(json.dumps(result, sort_keys=True, default=str)),
                             status_code=status.HTTP_200_OK)
@@ -48,6 +48,21 @@ def get_reviews_by_book_id_path(book_id: int):
         return JSONResponse(content='NOT FOUND',
                             status_code=status.HTTP_404_NOT_FOUND) 
     
+@reviews_router.put("/{username}")
+async def remove_reviews(username: str):
+    result = ReviewResource.remove_reviews_for_user(username)
+    msg = {
+        "status" : "Success"
+    }
+
+    if result:
+        return JSONResponse(content=json.loads(json.dumps(msg, sort_keys=True, default=str)),
+                            status_code=status.HTTP_200_OK)
+    else:
+        msg["status"] = "Failure" 
+        return JSONResponse(content=msg,
+                            status_code=status.HTTP_404_NOT_FOUND) 
+
 
 
 @reviews_router.post("")
@@ -55,7 +70,7 @@ async def get_reviews_by_book_id(request: Request):
     error = False
     try:
         data = await request.json()
-        result = ReviewResource.create_review(data["book_id"], data["review_text"], data["user_id"], data["score"])
+        result = ReviewResource.create_review(data["book_id"], data["review_text"], data["username"], data["score"])
     except Exception as e:
         result = {
             "status": "Invalid Key Error",
