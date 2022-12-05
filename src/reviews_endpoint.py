@@ -49,8 +49,13 @@ def get_reviews_by_book_id_path(book_id: int):
                             status_code=status.HTTP_404_NOT_FOUND) 
     
 @reviews_router.put("/{username}")
-async def remove_reviews(username: str):
-    result = ReviewResource.remove_reviews_for_user(username)
+async def remove_reviews(username: str, request: Request):
+    try:
+        data = await request.json() 
+        result = ReviewResource.remove_reviews_for_user(username, data["disabled"])
+    except:
+        result = None #Failure        
+
     msg = {
         "status" : "Success"
     }
