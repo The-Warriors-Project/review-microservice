@@ -94,10 +94,13 @@ class ReviewResource:
         return result
 
     @staticmethod
-    def remove_reviews_for_user(username):
+    def remove_reviews_for_user(username, disabled):
         try:
             t = datetime.now()
-            sql = "UPDATE reviews_db.reviews SET is_active = 0 WHERE username=%s"
+            if disabled: 
+                sql = "UPDATE reviews_db.reviews SET is_active = 0 WHERE username=%s"
+            else:
+                sql = "UPDATE reviews_db.reviews SET is_active = 1 WHERE username=%s"
             conn = ReviewResource._get_connection()
             cur = conn.cursor()
             res = cur.execute(sql, username)
