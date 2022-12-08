@@ -8,10 +8,10 @@ This is the Reviews Microservice for the Book Project. This Microservice has bee
 
 1. Make sure you have Docker CLI set up for your OS. We are using [Docker with Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04)
 
-2. If you have not already created a Docker image, run the following command:
+2. If you have not already created a Docker image, run the following command within the cloned repo:
 `docker build -t myimage .`
 
-3. After you have created your Docker image, you can launch the container with the following command:
+3. After you have created your Docker image, you can launch the container with the following command within the cloned repo:
 `docker run -d --name mycontainer -p 5011:5011 myimage`  
 
 4. Make sure the AWS RDS instance is on.
