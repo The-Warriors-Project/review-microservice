@@ -72,6 +72,12 @@ async def remove_reviews(username: str, request: Request):
 
 @reviews_router.post("")
 async def get_reviews_by_book_id(request: Request):
+    """
+    :param book_id: unique book_id 
+    :param review_text: user's review 
+    :param username: unique username 
+    :param score: float value between 0-5 
+    """
     error = False
     try:
         data = await request.json()

@@ -14,10 +14,10 @@ class ReviewResource:
         # pw = os.environ.get("DBPW")
         # h = os.environ.get("DBHOST")
         usr = "admin"
-        pw = "password"
-        #pw = "the_warriors"
-        h = "e61561.cn3tryzjsdgx.us-east-1.rds.amazonaws.com"
-        #h = "books.c4m5teyjg8v7.us-east-1.rds.amazonaws.com"
+        #pw = "password"
+        pw = "the_warriors"
+        #h = "e61561.cn3tryzjsdgx.us-east-1.rds.amazonaws.com"
+        h = "books.c4m5teyjg8v7.us-east-1.rds.amazonaws.com"
 
         conn = pymysql.connect(
             user=usr,
