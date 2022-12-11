@@ -45,7 +45,9 @@ def get_reviews_by_book_id_path(book_id: int):
         return JSONResponse(content=json.loads(json.dumps(msg, sort_keys=True, default=str)),
                             status_code=status.HTTP_200_OK)
     else:
-        return JSONResponse(content='NOT FOUND',
+        msg["average_score"] = None
+        msg["reviews"] = []
+        return JSONResponse(content=msg,
                             status_code=status.HTTP_404_NOT_FOUND) 
     
 @reviews_router.put("/{username}")
