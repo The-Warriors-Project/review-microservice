@@ -86,8 +86,7 @@ async def get_reviews_by_book_id(request: Request):
         result = ReviewResource.create_review(data["book_id"], data["review_text"], data["username"], data["score"])
     except Exception as e:
         result = {
-            "status": "Invalid Key Error",
-            "body": e
+            "status": e
         }
         print("got an error")
         error = True
