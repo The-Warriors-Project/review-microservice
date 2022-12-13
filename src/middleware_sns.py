@@ -30,18 +30,3 @@ def publish_message(message, subject):
         raise
     else:
         return response
-
-
-def list_topics():
-    try:
-        paginator = sns_client.get_paginator('list_topics')
-        page_iterator = paginator.paginate().build_full_result()
-        topics_list = []
-
-        for page in page_iterator['Topics']:
-            topics_list.append(page['TopicArn'])
-    except ClientError:
-        logger.exception(f'Could not list SNS topics.')
-        raise
-    else:
-        return topics_list

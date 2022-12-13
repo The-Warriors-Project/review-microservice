@@ -2,11 +2,12 @@ import json
 from datetime import datetime
 
 from fastapi import FastAPI, Response, status, Request
+from starlette.types import Message
 
 from review_resource import ReviewResource
 from reviews_endpoint import reviews_router
 
-from src.middleware_sns import list_topics, publish_message
+from src.middleware_sns import publish_message
 
 app = FastAPI()
 app.include_router(reviews_router)
@@ -44,27 +45,26 @@ def get_health():
     return result
 
 
+async def set_body(request: Request, body: bytes):
+    async def receive() -> Message:
+        return {"type": "http.request", "body": body}
+
+    request._receive = receive
+
+
+async def get_body(request: Request) -> bytes:
+    body = await request.body()
+    await set_body(request, body)
+    return body
+
+
 @app.middleware("http")
 async def some_middleware_test_call(request: Request, call_next):
-    ############################
-    # put your "before request" stuff here
-    # gets executed before every single Request
-    print("before")
-    for topic in list_topics():
-        print(topic)
-    ##########################
-    # Don't change this
+    await set_body(request, await request.body())
+    params = dict(json.loads((await get_body(request)).decode('utf-8')))
     response = await call_next(request)
-
-    ############################
-    # put your "After request" stuff here
-    # gets executed after every single Request
-    print(request.method)
     if request.method == "POST":
-        msg = "this is a test message"
-        subject = "this is a test subject"
-        message_id = publish_message(msg, subject)
-        print(message_id)
-    ################################################
-
+        msg = params["username"] + "#" + str(params["book_id"]) + "#" + params["title"] + "#" + params["email"]
+        subject = "review_confirmation_subject"
+        publish_message(msg, subject)
     return response
