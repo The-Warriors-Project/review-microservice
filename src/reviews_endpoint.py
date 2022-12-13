@@ -8,11 +8,11 @@ import uvicorn
 
 from review_resource import ReviewResource
 
-
 reviews_router = APIRouter(prefix='/api/v1/reviews')
 
 
-@reviews_router.get(path='/username/{username}', status_code=status.HTTP_200_OK, operation_id='get_all_reviews_by_user_id')
+@reviews_router.get(path='/username/{username}', status_code=status.HTTP_200_OK,
+                    operation_id='get_all_reviews_by_user_id')
 def get_reviews_by_user_id(username: str):
     """
 
@@ -25,20 +25,20 @@ def get_reviews_by_user_id(username: str):
                             status_code=status.HTTP_200_OK)
     else:
         return JSONResponse(content='NOT FOUND',
-                            status_code=status.HTTP_404_NOT_FOUND) 
+                            status_code=status.HTTP_404_NOT_FOUND)
 
 
-
-@reviews_router.get(path='/book_id/{book_id}', status_code=status.HTTP_200_OK, operation_id='get_all_reviews_by_book_id')
+@reviews_router.get(path='/book_id/{book_id}', status_code=status.HTTP_200_OK,
+                    operation_id='get_all_reviews_by_book_id')
 def get_reviews_by_book_id_path(book_id: int):
     """
 
     :param book_id: book id
     :return: return all reviews for a given book_id
     """
-    result, avg  = ReviewResource.get_by_book_id(book_id)
-    msg = { 
-        "reviews": result, 
+    result, avg = ReviewResource.get_by_book_id(book_id)
+    msg = {
+        "reviews": result,
         "average_score": avg
     }
     if result:
@@ -48,28 +48,28 @@ def get_reviews_by_book_id_path(book_id: int):
         msg["average_score"] = None
         msg["reviews"] = []
         return JSONResponse(content=msg,
-                            status_code=status.HTTP_404_NOT_FOUND) 
-    
+                            status_code=status.HTTP_404_NOT_FOUND)
+
+
 @reviews_router.put("/{username}")
 async def remove_reviews(username: str, request: Request):
     try:
-        data = await request.json() 
+        data = await request.json()
         result = ReviewResource.remove_reviews_for_user(username, data["disabled"])
     except:
-        result = None #Failure        
+        result = None  # Failure
 
     msg = {
-        "status" : "Success"
+        "status": "Success"
     }
 
     if result:
         return JSONResponse(content=json.loads(json.dumps(msg, sort_keys=True, default=str)),
                             status_code=status.HTTP_200_OK)
     else:
-        msg["status"] = "Failure" 
+        msg["status"] = "Failure"
         return JSONResponse(content=msg,
-                            status_code=status.HTTP_404_NOT_FOUND) 
-
+                            status_code=status.HTTP_404_NOT_FOUND)
 
 
 @reviews_router.post("")
@@ -102,7 +102,6 @@ async def get_reviews_by_book_id(request: Request):
 
 @reviews_router.get("")
 def get_reviews_by_book_id(request: Request):
-    error = False
     book_id, user_id = None, None
     if 'book_id' in request.query_params:
         book_id = request.query_params['book_id']
@@ -123,5 +122,3 @@ def get_reviews_by_book_id(request: Request):
     else:
         return JSONResponse(content='NOT FOUND',
                             status_code=status.HTTP_404_NOT_FOUND)
-
-
