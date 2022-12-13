@@ -64,7 +64,7 @@ async def some_middleware_test_call(request: Request, call_next):
     params = dict(json.loads((await get_body(request)).decode('utf-8')))
     response = await call_next(request)
     if request.method == "POST":
-        msg = params["username"] + "#" + str(params["book_id"]) + "#" + params["title"] + "#" + params["email"]
+        msg = params["username"] + "#" + params["title"] + "#" + params["email"]
         subject = "review_confirmation_subject"
         publish_message(msg, subject)
     return response
