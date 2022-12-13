@@ -26,10 +26,11 @@ This is the Reviews Microservice for the Book Project. This Microservice has bee
 3. Run the command to activate the program 
 ```
 cd src/
-uvicorn main:app --reload
+python3 main.py
 ```
 ## Endpoints 
 
+<<<<<<< HEAD
 - POST requests to /api/v1/reviews must include JSON format with keys book_id, username, review_text, score
 
 - GET requests to /api/v1/reviews can include parameters for user_id, book_id, or both (primarily used for testing)
@@ -37,4 +38,7 @@ uvicorn main:app --reload
 - GET requests to /api/v1/reviews/book_id/{book_id} and /api/v1/reviews/username/{username}
 
 - PUT requests to /api/v1/reviews/{username}  
+=======
+http://3.82.245.34:5011/docs#/
+>>>>>>> 83bafe3 (Update README.md)
 
