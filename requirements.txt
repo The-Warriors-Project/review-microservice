@@ -13,5 +13,6 @@ six==1.16.0
 urllib3==1.26.12
 Werkzeug==2.2.2
 uvicorn
+boto3
 
 fastapi~=0.87.0

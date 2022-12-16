@@ -6,7 +6,7 @@ from starlette.types import Message
 
 from review_resource import ReviewResource
 from reviews_endpoint import reviews_router
-from src.middleware_sns import publish_message
+from middleware_sns import publish_message
 
 app = FastAPI()
 app.include_router(reviews_router)
@@ -59,11 +59,13 @@ async def get_body(request: Request) -> bytes:
 
 @app.middleware("http")
 async def some_middleware_test_call(request: Request, call_next):
-    await set_body(request, await request.body())
-    params = dict(json.loads((await get_body(request)).decode('utf-8')))
+    if request.method == "POST":
+        await set_body(request, await request.body())
+        params = dict(json.loads((await get_body(request)).decode('utf-8')))
     response = await call_next(request)
     if request.method == "POST":
         msg = params["username"] + "#" + params["title"] + "#" + params["email"]
         subject = "review_confirmation_subject"
         publish_message(msg, subject)
+
     return response
